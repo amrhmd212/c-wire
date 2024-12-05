@@ -1,0 +1,170 @@
+#include <stdlib.h>
+#include<stdio.h>
+
+typedef struct chainon{
+    int val;
+    int equilibre;
+    struct chainon* fg;
+    struct chainon* fd;
+}AVL;
+
+AVL* creer_AVL(int e){
+    AVL*nvx=malloc(sizeof(AVL));
+    if(nvx==NULL){
+        printf("pb de malloc dans la fct creer_AVL")
+        exit(1);
+    }
+    nvx->val=e;
+    nvx->equilibre=0;
+    nvx->fg=NULL;
+    nvx->fd=NULL;
+    return nvx;
+}
+AVL*roation_simple_gauche(AVL*a){
+    ALV*pivot=a->fd;
+    a->fd=pivot->fg;
+    pivot->fg=a;
+    int eq_a=a->equilibre:
+    int eq_pivot=pivot_>equilibre;
+    a->equilibre=eq_a-max(eq_p,0)-1;
+    pivot->equilibre=min3(eq_a-2,eq_a+eq_p-2,eq_p-1);
+    return pivot;
+}
+
+AVL*rotation_simple_droit(AVL*a){
+    AVL*pivot=a->fg;
+    a->fg=pivot->fd;
+    pivot->fd=a;
+    int eq_a=a->equilibre;
+    int eq_p=pivot->equilibre;
+    a->equilibre=eq_a-min(eq_p,0)+1;
+    pivot->equilibre=max3(eq_a+2,eq_a+eq_p+2,eq_p+1);
+    return pivot;
+}
+
+AVL*rotation_double_gauche(AVL*a){
+    a->fd=rotation_simple_droit(a->fd);
+    return roation_simple_gauche(a);
+}
+
+AVL*rotation_double_droit(AVL*a){
+    a->fg=roation_simple_gauche(a->fg);
+    return rotation_simple_droit(a);
+}
+
+AVL*equilibrerAVL(AVL*a){
+    if(a->equilibre>=2){
+        if(a->fd->equilibre>=0){
+            return rotation_simple_gauche(a);
+        }
+        else{
+            return rotation_double_gauche(a);
+        }
+    }
+    if(a->equilibre<=-2){
+        if(a->fg->equilibre<=0){
+            return rotation_simple_droit(a);
+        }
+        else{
+            return rotation_double_droit(a);
+        }
+    }
+    return a;
+}
+
+AVL*insertionAVL(AVL*a,int*h,int e){
+    if(a==NULL){
+        *h=1;
+        return creer_AVL(e);
+    }
+    else if(e<a->val){
+        a->fg=insertionAVL(a->fg,h,e);
+        *h=-*h;
+    }
+    else if(e>a->val){
+        a->fd=insertionAVL(a->fd,h,e);
+    }
+    else{
+        *h=0;
+        return a;
+    }
+    
+    if(*h!=0){
+        a->equilibre+=*h;
+        a=equilibrerAVL(a);
+        if(a->equilibre==0){
+            *h=-1;
+        }
+        else{
+            *h=0;
+        }
+    }
+    return a;
+}
+
+AVL*SuppMinAVL(AVL*a,int h,int valeur){
+    AVL*supp;
+    if(a->fg==NULL){
+        *valeur=a->val;
+        *h=-1;
+        supp=a;
+        a=a->fd;
+        free(supp);
+        return a;
+    }
+    else{
+        a->fg=SuppMinAVL(a->fg,h,valeur);
+        *h=-*h;
+    }
+    if(*h!=0){
+        a->equilibre+=*h;
+        a=equilibrerAVL(a);
+        if(a->equilibre==0){
+            *h=-1;
+        }
+        else{
+            *h=0;
+        }
+    }
+    return a;
+}
+
+AVL*suppAVL(AVL*a,int*h,int e){
+    AVL*supp;
+    if(a==NULL){
+        *h=1;
+        return a;
+    }
+    else if(e<a->val){
+        a->fg=suppAVL(a->fg,h,e);
+        *h=-*h;
+    }
+    else if(e>a->val){
+        a->fd=suppAVL(a->fd,h,e);
+    }
+    else if(a->fd!=NULL){
+        a->fd=SuppMinAVL(a->fd,h,&(a->val));
+    }
+    else{
+        supp=a;
+        a=a->fg;
+        free(supp);
+        *h=-1;
+    }
+    if(a==NULL){
+        return a;
+    }
+    
+    if(*h!=0){
+        a->equilibre+=*h;
+        a=equilibrerAVL(a);
+        if(a->equilibre==0){
+            *h=-1;
+        }
+        else{
+            *h=0;
+        }
+        
+    }
+    return a;
+}

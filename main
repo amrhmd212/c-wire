@@ -1,118 +1,28 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "main.h"
 
-// Structure pour un noeud AVL
-typedef struct AVL {
-    int id_station;  // ID de la station
-    long capacite;   // Capacité de la station
-    long consommation_totale;  // Consommation totale de la station
-    struct AVL *fg;  // sous-arbre gauche
-    struct AVL *fd;  // sous-arbre droit
-    int equilibre;   // facteur d'équilibre
-} AVL;
-
-// Fonction pour créer un noeud AVL
-AVL* creer_AVL(int id_station, long capacite) {
-    AVL* new_node = (AVL*)malloc(sizeof(AVL));
-    if (!new_node) {
-        perror("Erreur d'allocation mémoire");
-        exit(1);
-    }
-    new_node->id_station = id_station;
-    new_node->capacite = capacite;
-    new_node->consommation_totale = 0;
-    new_node->fg = new_node->fd = NULL;
-    new_node->equilibre = 0;
-    return new_node;
-}
-
-// Fonction pour gérer les erreurs
-void gestion_erreur(const char *fonction, const char *message) {
-    fprintf(stderr, "Erreur dans la fonction %s: %s\n", fonction, message);
-    exit(1);
-}
-
-// Fonction pour équilibrer l'arbre AVL (implémenter les rotations si nécessaire)
-AVL* equilibrerAVL(AVL* a) {
-    // Implémentez ici les rotations AVL si nécessaire
-    return a;
-}
-
-// Fonction d'insertion dans l'arbre AVL
-AVL* insertionAVL(AVL* a, int* h, int id_station, long capacite, long consommation) {
-    if (id_station <= 0) {
-        gestion_erreur("insertionAVL", "Identifiant de station NULL ou négatif");
-    }
-    if (a == NULL) {
-        *h = 1;
-        return creer_AVL(id_station, capacite);
-    }
-
-    if (id_station < a->id_station) {
-        a->fg = insertionAVL(a->fg, h, id_station, capacite, consommation);
-        *h = -(*h);
-    } else if (id_station > a->id_station) {
-        a->fd = insertionAVL(a->fd, h, id_station, capacite, consommation);
-    } else {
-        // Si l'ID de la station existe déjà, on additionne la consommation totale
-        a->consommation_totale += consommation;
-        *h = 0;
-        return a;
-    }
-
-    if (*h != 0) {
-        a->equilibre += *h;
-        a = equilibrerAVL(a);
-        if (a->equilibre == 0) *h = 0;
-    }
-
-    return a;
-}
-
-// Fonction pour effectuer un parcours en ordre et écrire dans le fichier
-void parcours_en_ordre(AVL* a, FILE* output_file) {
-    if (a == NULL) return;
-    parcours_en_ordre(a->fg, output_file);
-    fprintf(output_file, "%d;%ld;%ld\n", a->id_station, a->capacite, a->consommation_totale);
-    parcours_en_ordre(a->fd, output_file);
-}
-
-int main() {
-    FILE *output_file;
-    char line[1024];
-    int id_station, id_consommateur;
-    long capacite, consommation;
-    int h = 0;
-    AVL* arbre_AVL = NULL;
+// Fonction main pour lire depuis stdin
+int main(){
+    FILE* sortie;
+    int z = 0;
 
     // Ouvrir le fichier de sortie (resultat.csv)
-    output_file = fopen("resultat.csv", "w");
-    if (output_file == NULL) {
-        perror("Erreur lors de l'ouverture du fichier de sortie");
+    sortie = fopen("tests/resultat.csv", "w");
+    if (sortie == NULL) {
+        gestion_erreur("main", "Erreur lors de l'ouverture du fichier de sortie");
         return 1;
     }
 
-    // Lire les lignes envoyées par le script shell via stdin (flux d'entrée standard)
-    while (fgets(line, sizeof(line), stdin)) {
-        capacite = 0;    // Initialiser les valeurs par défaut
-        consommation = 0;
+    // Construire l'AVL à partir de stdin
+    AVL* racine = construire_AVL();
 
-        // Extraire les valeurs du CSV (id_station, id_consommateur, capacite, consommation)
-        if (sscanf(line, "%d;%d;%ld;%ld", &id_station, &id_consommateur, &capacite, &consommation) == 4) {
-            // Insérer les valeurs dans l'arbre AVL
-            arbre_AVL = insertionAVL(arbre_AVL, &h, id_station, capacite, consommation);
-        }
-    }
+    // Écrire le résultat dans stdout
+    parcours_infixe(racine, sortie, &z);
+    fclose(sortie);
 
-    // Parcourir l'arbre AVL en ordre et écrire dans le fichier de sortie
-    parcours_en_ordre(arbre_AVL, output_file);
+    // Libérer la mémoire
+    liberer_AVL(racine);
 
-    // Fermer le fichier de sortie
-    fclose(output_file);
-
-    printf("Les données triées ont été enregistrées dans resultat.csv\n");
-
-    return 0;
+    return EXIT_SUCCESS;
 }
+
 

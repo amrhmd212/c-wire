@@ -1,0 +1,59 @@
+Projet C-Wire 
+
+Ce projet vise à traiter et analyser des données de distribution d’électricité à l’aide d’un programme en C et d’un script en Shell. 
+Le traitement repose sur un fichier volumineux contenant des informations sur la distribution d’énergie en France, incluant les centrales électriques, les sous stations HV-A, HV-B, et les postes LV.
+
+Objectifs du projet: 
+
+Filtrage des données: utiliser un script Shell pour extraire les données pertinentes depuis le fichier CSV d’entrée.
+Traitement de données: Implémenter un programme en C basé sur des arbres AVL pour calculer des statistiques sur les stations comme la capacité et la consommation totale.
+Production graphiques: Générer des graphiques pour visualiser les résultats
+
+Fonctionnalités:
+
+Traitement de trois types de stations:
+- HV-B (High voltage B)
+- HV-A (High voltage A)
+- LV (low voltage)
+
+Calcul des consommations pour différentes types de clients:
+- comp : uniquement les entreprises
+- indiv : uniquement les particuliers
+- all : tous les clients
+
+fichiers de sortie structurés:
+- Données triées par capacité croissante 
+- Extraction des 10 postes LV avec le plus de consommation et les 10 avec le moins de consommation
+
+
+graphiques en barre:
+- Visualisation des postes LV les plus et moins chargés
+
+
+Prérequis 
+
+GCC : pour compiler le programme C
+Gnu Make : pour utiliser le fichier makefile
+GnuPlot : pour générer les graphiques
+Awk : filtrer les données CSV
+
+Organisation des fichiers: 
+
+input: fichier CSV d’entrée
+tmp: fichiers temporaires
+graphs: graphiques générés
+tests: fichiers de tests
+code C: code du programme C, incluant main.c et Makefile
+c-wire.sh: script shell(
+readme: documentation et résumé du projet
+
+exécuter le code: 
+compiler le programme C:
+              cd main.c
+              make
+exécuter le script shell:
+      chmod +x c-wire.sh
+      ./c-wire.sh <fichier_csv> <type_station> <type_consommation> [<id_centrale>] [-h]
+
+
+Le projet C-Wire permet de filtrer et traiter des données massives liées à la distribution d'énergie. En combinant les performances d'un arbre AVL en C à celle d'un script Shell, il offre la possibilité de manipuler efficacement des millions de lignes de données. Les résultats obtenus sont à la fois exacts et utilisables pour la visualisation graphique.

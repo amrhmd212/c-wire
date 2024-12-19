@@ -220,8 +220,8 @@ mv tests/resultat.csv tests/lv_all_resultat.csv
 echo "Résultats enregistrés dans tests/lv_all_resultat.csv"
 
 
-# Extraire les top et bottom 5
-extract_top_5() {
+# Extraire les top et bottom 10
+extract_top_10() {
     local input_csv="tests/lv_all_resultat.csv"
     local output_csv="tests/all_min_max.csv"
     if [ ! -f "$input_csv" ]; then
@@ -233,12 +233,12 @@ extract_top_5() {
     awk -F';' 'NR > 1 {
         diff = $3 - $2; 
         print $1 ";" $2 ";" $3 ";" diff
-    }' "$input_csv" | sort -t';' -k4,4nr | head -n 5 | cut -d';' -f1-3 >> "$output_csv"
+    }' "$input_csv" | sort -t';' -k4,4nr | head -n 10 | cut -d';' -f1-3 >> "$output_csv"
 
-    echo "Les 5 plus grands nombres de la 3e colonne ont été sauvegardés dans $output_csv."
+    echo "Les 10 plus grands nombres de la 3e colonne ont été sauvegardés dans $output_csv."
 }
 
-extract_bottom_5() {
+extract_bottom_10() {
     local input_csv="tests/lv_all_resultat.csv"
     local output_csv="tests/all_min_max.csv"
 
@@ -250,9 +250,9 @@ extract_bottom_5() {
     awk -F';' 'NR > 1 && $3 > $2 {
         diff = $3 - $2;
         print $1 ";" $2 ";" $3 ";" diff
-    }' "$input_csv" | sort -t';' -k4,4nr | tail -n 5 | cut -d';' -f1-3 >> "$output_csv"
+    }' "$input_csv" | sort -t';' -k4,4nr | tail -n 10 | cut -d';' -f1-3 >> "$output_csv"
 
-    echo "Les 5 stations avec les plus petites différences (consommation-capacité) ont été ajoutées à $output_csv."
+    echo "Les 10 stations avec les plus petites différences (consommation-capacité) ont été ajoutées à $output_csv."
 }
 
 generate_graph() {
@@ -297,8 +297,8 @@ EOF
 }
 
 # Exécuter les fonctions pour lv et all
-    extract_top_5
-    extract_bottom_5
+    extract_top_10
+    extract_bottom_10
     generate_graph
 else
     echo "Erreur : Combinaison d'arguments invalide."
@@ -314,6 +314,6 @@ echo "Durée totale de traitement : ${elapsed_time}s"
 # Nettoyage des fichiers temporaires
 #rm -rf tmp/*
 
-#mv "$fichier_csv" input/
+mv "$fichier_csv" input/
 # Fin du script
 echo "Traitement terminé."

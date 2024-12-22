@@ -55,5 +55,7 @@ exécuter le script shell:
       chmod +x c-wire.sh
       ./c-wire.sh <fichier_csv> <type_station> <type_consommation> [<id_centrale>] [-h]
 
+ou sinon avec :
+      bash ./c-wire.sh <fichier_csv> <type_station> <type_consommation> [<id_centrale>] [-h]
 
 Le projet C-Wire permet de filtrer et traiter des données massives liées à la distribution d'énergie. En combinant les performances d'un arbre AVL en C à celle d'un script Shell, il offre la possibilité de manipuler efficacement des millions de lignes de données. Les résultats obtenus sont à la fois exacts et utilisables pour la visualisation graphique.

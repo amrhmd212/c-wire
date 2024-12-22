@@ -33,7 +33,8 @@ if [ ! -f "codeC/main.c" ]; then # Vérification si le fichier main.c existe dan
     echo "Erreur : Fichier 'main.c' introuvable dans le dossier 'codeC'." # Affichage d'un message d'erreur
     exit 1 # Sortie du script avec code d'erreur 1
 fi
-rm -rf tests/* # Suppression des fichiers dans le dossier tests s'ils existent
+rm -rf tests/* #suppression des fichiers dans le dossier tests si ils existent 
+# Suppression des fichiers dans le dossier tests s'ils existent
 make clean -C codeC # Nettoyage du dossier codeC
 make -C codeC # Création des fichiers .o et .a dans le dossier codeC
 if [ $? -ne 0 ]; then # Vérification si la création des fichiers .o et .a a réussi
@@ -50,7 +51,7 @@ if [ "$#" -lt 3 ]; then # Verification si le nombre d'arguments est inférieur �
 fi
 
 # Arguments
-fichier_csv="$1" # Fichier CSV d'entrée
+fichier_csv="$1" # Fichier d'entrée CSV 
 type_station="$2" # Type de station à traiter
 type_consommateur="$3" # Type de consommateur à traiter
 id_centrale="$4" # Identifiant de la centrale
@@ -63,8 +64,8 @@ if [ -f "input/$fichier_csv" ]; then # Vérification si le fichier CSV existe da
     input_file="input/$fichier_csv" # Chemin complet du fichier CSV dans le dossier input
     echo "Le fichier '$fichier_csv' a été trouvé dans le dossier 'input/'." # Affichage d'un message de confirmation pour indiquer que le fichier d'entrée csv est trouvé
 elif [ -f "$fichier_csv" ]; then # Vérification si le fichier CSV existe dans le répertoire courant
-    mv "$fichier_csv" input/ # Déplacement du fichier CSV d'entree dans le dossier input
-    input_file="input/$fichier_csv" # Chemin complet du fichier CSV d'entree dans le dossier input
+    mv "$fichier_csv" input/ # Déplacement du fichier d'entree CSv  dans le dossier input
+    input_file="input/$fichier_csv" # Chemin complet du fichier d'entree CSV  dans le dossier input
     echo "Le fichier '$fichier_csv' a été déplacé dans le dossier 'input/'." # Affichage d'un message de confirmation pour le fichier d'entrée csv déplacé
 else # Si le fichier CSV n'existe pas dans le dossier input ou dans le répertoire courant
     echo "Erreur : Le fichier '$fichier_csv' n'existe ni dans 'input/' ni dans le répertoire courant." # Affichage d'un message d'erreur car le fichier d'entrée csv n'existe pas
@@ -114,7 +115,7 @@ mkdir -p tmp graphs tests
 
 # Gestion de l'identifiant de centrale
 filtre_centrale="" # Initialisation de la variable filtre_centrale
-if [ -n "$id_centrale" ]; then # Verification si l'identifiant de centrale est fourni
+if [ -n "$id_centrale" ]; then # Verification si l'identifiant de la centrale est fourni
     if [ "$id_centrale" -ge 1 ] && [ "$id_centrale" -le 5 ]; then # Verification si l'identifiant de centrale est compris entre 1 et 5
         filtre_centrale="\$1 == \"$id_centrale\" &&" # Construction de la condition de filtrage pour l'identifiant de centrale
     else # Si l'identifiant de centrale n'est pas compris entre 1 et 5
@@ -127,11 +128,10 @@ fi
 
 # Traitement des cas selon les types de station et de consommateur
 if [[ "$type_station" == "hvb" && "$type_consommateur" == "comp" ]]; then # Traitement pour la station hvb et le consommateur comp
-    # Créer/écrire l'en-tête dans tmp/temptete.dat
     echo "Station HV-B;Capacité;Consommation (entreprises)" > tmp/temptete.dat # Ecriture de l'en-tête dans le fichier tmp/temptete.dat
-    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de centrale est fourni
+    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de la centrale est fourni
 
-        cat "$input_file" | \ # Lecture du fichier d'entrée
+        cat "$input_file" | \
         awk -F';' "$filtre_centrale \$2 != \"-\" && \$4 == \"-\" && \$7 == \"-\" || \$2 != \"-\" && \$3 == \"-\" && \$4 == \"-\" && \$5 == \"-\" && \$6 == \"-\"" | \
         cut -d';' -f2,5,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv 
     else # Si l'identifiant de centrale n'est pas fourni
@@ -139,90 +139,82 @@ if [[ "$type_station" == "hvb" && "$type_consommateur" == "comp" ]]; then # Trai
         awk -F';' "$filtre_centrale \$2 != \"-\" && \$4 == \"-\" && \$7 == \"-\" || \$2 != \"-\" && \$3 == \"-\" && \$4 == \"-\" && \$5 == \"-\" && \$6 == \"-\"" | \
         cut -d';' -f2,5,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv
     fi
-    sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2
-    mv tests/resultat.csv "tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de centrale
+    sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2 (capacité)
+    mv tests/resultat.csv "tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de la centrale
     echo "Résultats enregistrés dans tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Affichage d'un message de confirmation de l'enregistrement des résultats dans le dossier tests
 
 elif [[ "$type_station" == "hva" && "$type_consommateur" == "comp" ]]; then # Traitement pour la station hva et le consommateur comp
-    # Créer/écrire l'en-tête dans tmp/temptete.dat
     echo "Station HV-A;Capacité;Consommation (entreprises)" > tmp/temptete.dat # Ecriture de l'en-tête dans le fichier tmp/temptete.dat
-    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de centrale est fourni
+    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de la centrale est fourni
         cat "$input_file" | \
         awk -F';' "$filtre_centrale \$3 != \"-\" && \$5 != \"-\" && \$7 == \"-\" || \$2 != \"-\" && \$3 != \"-\" && \$4 == \"-\"" | \
         cut -d';' -f3,5,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv
-    else # Si l'identifiant de centrale n'est pas fourni
+    else # Si l'identifiant de la centrale n'est pas fourni
         grep -E "^$id_centrale;" "$input_file" | \
         awk -F';' "$filtre_centrale \$3 != \"-\" && \$5 != \"-\" && \$7 == \"-\" || \$2 != \"-\" && \$3 != \"-\" && \$4 == \"-\"" | \
         cut -d';' -f3,5,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv
     fi
-    sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2
+    sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2 (capacité)
     mv tests/resultat.csv "tests/${type_station}${type_consommateur}${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de centrale
     echo "Résultats enregistrés dans tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Affichage d'un message de confirmation de l'enregistrement des résultats dans le dossier tests
 
 elif [[ "$type_station" == "lv" && "$type_consommateur" == "comp" ]]; then # Traitement pour la station lv et le consommateur comp
-    # Créer/écrire l'en-tête dans tmp/temptete.dat
     echo "Station LV;Capacité;Consommation (entreprises)" > tmp/temptete.dat # Ecriture de l'en-tête dans le fichier tmp/temptete.dat
-    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de centrale est fourni
-
+    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de la centrale est fourni
         cat "$input_file" | \
         awk -F';' "$filtre_centrale \$4 != \"-\" && \$5 != \"-\" && \$7 == \"-\" || \$3 != \"-\" && \$4 != \"-\" && \$8 == \"-\"" | \
         cut -d';' -f4,5,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv
-    else # Si l'identifiant de centrale n'est pas fourni
+    else # Si l'identifiant de la centrale n'est pas fourni
         grep -E "^$id_centrale;" "$input_file" | \
         awk -F';' "$filtre_centrale \$4 != \"-\" && \$5 != \"-\" && \$7 == \"-\" || \$3 != \"-\" && \$4 != \"-\" && \$8 == \"-\"" | \
         cut -d';' -f4,5,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv
     fi
-    sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2
-    mv tests/resultat.csv "tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de centrale
+    sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2 (capacité)
+    mv tests/resultat.csv "tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de la centrale
     echo "Résultats enregistrés dans tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Affichage d'un message de confirmation de l'enregistrement des résultats dans le dossiser tests
 
 
 elif [[ "$type_station" == "lv" && "$type_consommateur" == "indiv" ]]; then # Traitement pour la station lv et le consommateur indiv
-    # Créer/écrire l'en-tête dans tmp/temptete.dat
     echo "Station LV;Capacité;Consommation (particuliers)" > tmp/temptete.dat # Ecriture de l'en-tête dans le fichier tmp/temptete.dat
-    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de centrale est fourni
-
+    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de la centrale est fourni
         cat "$input_file" | \
         awk -F';' "$filtre_centrale \$4 != \"-\" && \$6 != \"-\" && \$7 == \"-\" || \$3 != \"-\" && \$4 != \"-\" && \$8 == \"-\"" | \
         cut -d';' -f4,6,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv
-    else # Si l'identifiant de centrale n'est pas fourni
+    else # Si l'identifiant de la centrale n'est pas fourni
         grep -E "^$id_centrale;" "$input_file" | \
         awk -F';' "$filtre_centrale \$4 != \"-\" && \$6 != \"-\" && \$7 == \"-\" || \$3 != \"-\" && \$4 != \"-\" && \$8 == \"-\"" | \
         cut -d';' -f4,6,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv 
     fi
     sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2
-    mv tests/resultat.csv "tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de
+    mv tests/resultat.csv "tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de la centrale
     echo "Résultats enregistrés dans tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Affichage d'un message de confirmation de l'enregistrement des résultats dans le dossier tests
 
 elif [[ "$type_station" == "lv" && "$type_consommateur" == "all" ]]; then # Traitement pour la station lv et le consommateur all
     echo "Station LV;Capacité;Consommation (Tous)" > tmp/temptete.dat # Ecriture de l'en-tête dans le fichier tmp/temptete.dat
-
     # Filtre pour "comp" (entreprises)
     comp_file="tmp/comp_data.csv" # initialisation de la variable comp_file
-    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de centrale est fourni
+    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de la centrale est fourni
         cat "$input_file" | \
         awk -F';' "$filtre_centrale \$4 != \"-\" && \$5 != \"-\" && \$7 == \"-\" || \$3 != \"-\" && \$4 != \"-\" && \$8 == \"-\"" | \
         cut -d';' -f4,5,7,8 | tr '-' '0' > "$comp_file"
-    else # Si l'identifiant de centrale n'est pas fourni
+    else # Si l'identifiant de la centrale n'est pas fourni
         grep -E "^$id_centrale;" "$input_file" | \
         awk -F';' "$filtre_centrale \$4 != \"-\" && \$5 != \"-\" && \$7 == \"-\" || \$3 != \"-\" && \$4 != \"-\" && \$8 == \"-\"" | \
         cut -d';' -f4,5,7,8 | tr '-' '0' > "$comp_file"
     fi
-
     # Vérification du fichier comp_data.csv
     if [ ! -s "$comp_file" ]; then # Vérification si le fichier comp_data.csv est vide
         echo "Erreur : Le fichier $comp_file est vide ou n'a pas été créé. Vérifiez les filtres." # Affichage d'un message d'erreur car fichier comp_data.csv vide
         exit 1 # Sortie du script avec code d'erreur 1
     fi
 
-
     # Filtre pour "indiv" (particuliers)
     indiv_file="tmp/indiv_data.csv" # mise en place de la variable indiv_file
-    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de centrale est fourni
+    if [[ -z "$id_centrale" ]]; then # Verification si l'identifiant de la centrale est fourni
         cat "$input_file" | \
         awk -F';' "$filtre_centrale \$4 != \"-\" && \$6 != \"-\" && \$7 == \"-\" || \$3 != \"-\" && \$4 != \"-\" && \$8 == \"-\"" | \
         cut -d';' -f4,6,7,8 | tr '-' '0' > "$indiv_file"
-    else # Si l'identifiant de centrale n'est pas fourni
+    else # Si l'identifiant de la centrale n'est pas fourni
     grep -E "^$id_centrale;" "$input_file" | \
     awk -F';' "$filtre_centrale \$4 != \"-\" && \$6 != \"-\" && \$7 == \"-\" || \$3 != \"-\" && \$4 != \"-\" && \$8 == \"-\"" | \
     cut -d';' -f4,6,7,8 | tr '-' '0' > "$indiv_file"
@@ -234,7 +226,6 @@ elif [[ "$type_station" == "lv" && "$type_consommateur" == "all" ]]; then # Trai
         exit 1 # Sortie du script avec code d'erreur 1
     fi
 
-
     # Combinaison des deux fichiers
     combined_file="tmp/all_data.csv" # mise en place de la variable combined_file
     cat "$comp_file" "$indiv_file" > "$combined_file" # Combinaison des deux fichiers en utilisant la commande cat
@@ -242,7 +233,6 @@ elif [[ "$type_station" == "lv" && "$type_consommateur" == "all" ]]; then # Trai
         echo "Erreur : Le fichier combiné $combined_file est vide." # Affichage d'un message d'erreur car fichier combined_file vide
         exit 1 # Sortie du script avec code d'erreur 1
     fi
-
 
     # Exécution du programme C
     ./codeC/avl_program < "$combined_file" > tests/resultat.csv # Exécution du programme C avec le fichier combined_file en tant que flux d'entrée et le
@@ -254,8 +244,7 @@ elif [[ "$type_station" == "lv" && "$type_consommateur" == "all" ]]; then # Trai
     # Renommer le fichier de sortie
     sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2
     mv tests/resultat.csv "tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de centrale
-    echo "Résultats enregistrés dans tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Affichage d'un message de confirmation de l'enregistrement des résultats dans le doss
-
+    echo "Résultats enregistrés dans tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Affichage d'un message de confirmation de l'enregistrement des résultats dans le dossier tests
 
     # Extraire les top et bottom 10
     extract_top_10() {
@@ -273,7 +262,7 @@ elif [[ "$type_station" == "lv" && "$type_consommateur" == "all" ]]; then # Trai
 
         echo "Les 10 stations avec les plus grandes différences (consommation-capacité) ont été ajoutées à $output_csv." # Affichage d'un message de confirmation de l'ajout des 10 stations avec les plus grandes diffé
     }
-    
+
     extract_bottom_10() {
         local input_csv="tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # mise en place de la variable locale input_csv
         local output_csv="tests/lv_all_min_max.csv" # mise en place de la variable locale output_csv

@@ -33,8 +33,7 @@ if [ ! -f "codeC/main.c" ]; then # Vérification si le fichier main.c existe dan
     echo "Erreur : Fichier 'main.c' introuvable dans le dossier 'codeC'." # Affichage d'un message d'erreur
     exit 1 # Sortie du script avec code d'erreur 1
 fi
-rm -rf tests/* #suppression des fichiers dans le dossier tests si ils existent 
-# Suppression des fichiers dans le dossier tests s'ils existent
+
 make clean -C codeC # Nettoyage du dossier codeC
 make -C codeC # Création des fichiers .o et .a dans le dossier codeC
 if [ $? -ne 0 ]; then # Vérification si la création des fichiers .o et .a a réussi

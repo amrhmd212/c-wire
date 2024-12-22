@@ -155,7 +155,7 @@ elif [[ "$type_station" == "hva" && "$type_consommateur" == "comp" ]]; then # Tr
         cut -d';' -f3,5,7,8 | tr '-' '0' | ./codeC/avl_program > tests/resultat.csv
     fi
     sort -t';' -k2,2n tests/resultat.csv -o tests/resultat.csv # Tri du fichier tests/resultat.csv par ordre décroissant de la colonne 2 (capacité)
-    mv tests/resultat.csv "tests/${type_station}${type_consommateur}${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de centrale
+    mv tests/resultat.csv "tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Déplacement du fichier tests/resultat.csv dans le dossier tests avec le nom correspondant au type de station et au type de consommateur et à l'identifiant de centrale
     echo "Résultats enregistrés dans tests/${type_station}_${type_consommateur}_${id_centrale}_resultat.csv" # Affichage d'un message de confirmation de l'enregistrement des résultats dans le dossier tests
 
 elif [[ "$type_station" == "lv" && "$type_consommateur" == "comp" ]]; then # Traitement pour la station lv et le consommateur comp

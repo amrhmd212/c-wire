@@ -2,27 +2,22 @@
 
 // Fonction main pour lire depuis stdin
 int main(){
-    FILE* sortie;
-    int z = 0;
+    FILE* sortie;//initialisation du fichier de sortie.
+    int z = 0;//initialisation de z.
 
     // Ouvrir le fichier de sortie (resultat.csv)
-    sortie = fopen("tests/resultat.csv", "w");
-    if (sortie == NULL) {
-        gestion_erreur("main", "Erreur lors de l'ouverture du fichier de sortie");
-        return 1;
+    sortie = fopen("tests/resultat.csv", "w");//ouverture du fichier de sortie.
+    if (sortie == NULL) {//verfication de l'ouverture du fichier.
+        gestion_erreur("main", "Erreur lors de l'ouverture du fichier de sortie");//message d erreur.
+        return 1;//retour de 1.
     }
 
-    // Construire l'AVL à partir de stdin
-    AVL* racine = construire_AVL();
+    AVL* racine = construire_AVL();//initialisation de la racine.
 
-    // Écrire le résultat dans stdout
-    parcours_infixe(racine, sortie, &z);
-    fclose(sortie);
+    parcours_infixe(racine, sortie, &z);//appel de la fonction parcours infixe.
+    fclose(sortie);//fermeture du fichier de sortie.
 
-    // Libérer la mémoire
-    liberer_AVL(racine);
+    liberer_AVL(racine);//appel de la fonction liberer_AVL pour liberer la memoire.
 
-    return EXIT_SUCCESS;
+    return EXIT_SUCCESS;//retour du programme
 }
-
-
